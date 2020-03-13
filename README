@@ -1,0 +1,28 @@
+osso-applet-cplanguageregional
+==============================
+
+Control panel applet (and supporting binaries) to change system language and
+regional settings.
+
+Description
+===========
+
+Control panel applet can be used to change the system language and region, and
+will restart the systme afterwards.
+
+* `libcplanguageregional` is the control panel applet that allows the user to
+  change languages
+* `setlocale` is the binary that changes the system locale file
+  (`/etc/osso-af-init/locale`)
+
+
+Limitations
+===========
+
+Will only operate on locales that are currently available on the system, find
+out which ones like this:
+
+    localedef --list-archive
+
+Fremantle allows setting many more regional settings, but we currently only
+allow regional settings for available locales.

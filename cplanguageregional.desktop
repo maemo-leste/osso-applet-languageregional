@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=cpal_ti_language_and_regional_title
+Comment=Change the language and Regional settings.
+Type=HildonControlPanelPlugin
+Icon=control_language
+Categories=personalisation
+X-control-panel-plugin=libcplanguageregional.so
+X-Text-Domain=osso-clock
