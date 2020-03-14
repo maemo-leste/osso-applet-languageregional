@@ -1,0 +1,4 @@
+usr/bin/*
+usr/share/*
+etc/sudoers.d/*
+usr/lib/*/libcplanguageregional.so
