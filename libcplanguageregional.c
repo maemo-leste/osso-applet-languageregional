@@ -319,18 +319,24 @@ static char** get_locales_list(void) {
         char* ok;
         char* ppos = strstr(*line_iter, "utf8");
         if (ppos) {
-            int pos = ppos - *line_iter;
-            char* first_part = g_strndup(*line_iter, pos);
-
-            ok = g_strdup_printf("%s%s", first_part, "utf-8");
-
-            g_free(first_part);
+            char** split = g_strsplit(*line_iter, "utf8", 0);
+            if (split && split[0] && split[1]) {
+                g_free(split[1]);
+                split[1] = g_strdup("utf-8");
+                ok = g_strjoinv("", split);
+                g_strfreev(split);
+            } else {
+                g_error("Unable to split/join string on \"utf8\"");
+                g_strfreev(split);
+                goto skip;
+            }
         } else {
             ok = g_strdup(*line_iter);
         }
         res_cnt += 1;
         res = realloc(res, sizeof(char*) * res_cnt);
         res[res_cnt-1] = ok;
+skip:
         line_iter++;
     }
     res = realloc(res, sizeof(char*) * res_cnt + 1);
