@@ -1,3 +1,6 @@
+* We don't allow for as many regions as Fremantle does, and we'll have to figure
+  out if we can partially generate locales only for regions and such.
 * Capitalise the language and region names
 * Keep track if the language or region is actually changed, and if not, do not
   save/change/reboot on 'Save' button press
+* Maybe add add-remove-language
