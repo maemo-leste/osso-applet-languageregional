@@ -1,0 +1,3 @@
+* Capitalise the language and region names
+* Keep track if the language or region is actually changed, and if not, do not
+  save/change/reboot on 'Save' button press
