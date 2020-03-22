@@ -51,6 +51,8 @@ static GtkWidget* region_popup_button = NULL;
 static gchar* last_language = NULL;
 static gchar* last_region = NULL;
 
+char **locales_list = NULL;
+
 
 void free_static_vars() {
     if (last_region) {
@@ -62,7 +64,14 @@ void free_static_vars() {
         last_language = NULL;
     }
 
-    /* XXX: more? */
+    if (locales_list) {
+        char** locales_iter = locales_list;
+        while (*locales_iter != NULL) {
+            free(*locales_iter);
+            locales_iter++;
+        }
+        free(locales_list);
+    }
 
     return;
 }
@@ -289,32 +298,58 @@ gint ask_confirm_reboot(GtkDialog* dialog) {
     return response;
 }
 
+static char** get_locales_list(void) {
+    char** res = NULL;
+    int res_cnt = 0;
 
-/* XXX: Replace with call: localedef --list-archive */
+    int exit_status;
+    char* stdout_c;
+    g_spawn_command_line_sync("localedef --list-archive", &stdout_c, NULL, &exit_status, NULL);
+    if (exit_status != 0) {
+        goto done_1;
+    }
 
-char* locales_list[] = {
-    "bg_BG.utf-8",
-    "cs_CZ.utf-8",
-    "da_DK.utf-8",
-    "de_DE.utf-8",
-    "en_GB.utf-8",
-    "en_US.utf-8",
-    "es_ES.utf-8",
-    "es_MX.utf-8",
-    "fi_FI.utf-8",
-    "fr_CA.utf-8",
-    "fr_FR.utf-8",
-    "it_IT.utf-8",
-    "nl_NL.utf-8",
-    "pl_PL.utf-8",
-    "pt_PT.utf-8",
-    "ru_RU.utf-8",
-    "sv_SE.utf-8",
-    NULL,
-};
+    char** lines = g_strsplit(stdout_c, "\n", 0);
+    if (lines == NULL) {
+        goto done_1;
+    }
+
+    char** line_iter = lines;
+    while ((line_iter) && (*line_iter != NULL) && (strlen(*line_iter) > 1)) {
+        char* ok;
+        char* ppos = strstr(*line_iter, "utf8");
+        if (ppos) {
+            int pos = ppos - *line_iter;
+            char* first_part = g_strndup(*line_iter, pos);
+
+            ok = g_strdup_printf("%s%s", first_part, "utf-8");
+
+            g_free(first_part);
+        } else {
+            ok = g_strdup(*line_iter);
+        }
+        res_cnt += 1;
+        res = realloc(res, sizeof(char*) * res_cnt);
+        res[res_cnt-1] = ok;
+        line_iter++;
+    }
+    res = realloc(res, sizeof(char*) * res_cnt + 1);
+    res[res_cnt] = NULL;
+
+    g_strfreev(lines);
+
+done_1:
+    g_free(stdout_c);
+    return res;
+}
+
 
 GSList *get_language_list(void) {
     GSList* resolved_languages = NULL;
+
+    if (locales_list == NULL) {
+        locales_list = get_locales_list();
+    }
 
     char** locales_list_iter = locales_list;
 
@@ -343,6 +378,10 @@ GSList *get_language_list(void) {
 
 GSList *get_region_list(void) {
     GSList* resolved_regions = NULL;
+
+    if (locales_list == NULL) {
+        locales_list = get_locales_list();
+    }
 
     char** locales_list_iter = locales_list;
 
