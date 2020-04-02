@@ -72,6 +72,7 @@ void free_static_vars() {
         }
         free(locales_list);
     }
+    locales_list = NULL;
 
     return;
 }
