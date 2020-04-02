@@ -1,3 +1,9 @@
+osso-applet-cplanguageregional (1.0.2) unstable; urgency=low
+
+  * Fix memory corruption upon applet reload
+
+ -- Merlijn Wajer <merlijn@wizzup.org>  Fri, 03 Apr 2020 01:05:55 +0200
+
 osso-applet-cplanguageregional (1.0.1) unstable; urgency=low
 
   * Read locale archive file instead of hardcoded list of locales
